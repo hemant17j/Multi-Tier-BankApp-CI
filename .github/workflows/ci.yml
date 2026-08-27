@@ -109,38 +109,31 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/my-app-image:${{ github.run_id }}
 
-updatek8s:
-  runs-on: ubuntu-latest
-  needs: build
+  updatek8s:
+    runs-on: ubuntu-latest
+    needs: build
 
-  steps:
-    - name: Checkout CD repo
-      uses: actions/checkout@v4
-      with:
-        repository: hemant17j/Multi-Tier-BankApp-CD
-        token: ${{ secrets.GITHUB_TOKEN }}
-        path: bankapp
+    steps:
+      - name: Checkout CD repo
+        uses: actions/checkout@v4
+        with:
+          repository: hemant17j/Multi-Tier-BankApp-CD
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: bankapp
 
-    - name: Verify CD repository
-      run: |
-        echo "Files in CD repository:"
-        find bankapp -maxdepth 4 -type f
+      - name: Verify CD repository
+        run: |
+          echo "Files in CD repository:"
+          find bankapp -maxdepth 4 -type f
+      - name: Update tag in Kubernetes Deployment manifest
+        run: |
+          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/my-app-image:${{ github.run_id }}|" bankapp/bankapp-ds.yml
 
-    - name: Update tag in Kubernetes Deployment manifest
-      run: |
-        sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/my-app-image:${{ github.run_id }}|" \
-          bankapp/bankapp-ds.yml
-
-        echo "Updated manifest:"
-        grep "image:" bankapp/bankapp-ds.yml
-
-    - name: Commit and push changes
-      run: |
-        cd bankapp
-
-        git config user.name "Hemant Gupta"
-        git config user.email "hkg2818@gmail.com"
-
-        git add bankapp-ds.yml
-        git commit -m "Update Docker image tag to ${{ github.run_id }}"
-        git push origin main
+      - name: Commit and push changes
+        run: |
+          cd bankapp
+          git config --global user.name "Hemant"
+          git config --global user.email "hkg2818@gmail.com"
+          git add bankapp-ds.yml
+          git commit -m "Update Docker image tag to ${{ github.run_id }}"
+          git push origin main
