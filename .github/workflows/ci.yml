@@ -127,7 +127,7 @@ jobs:
           find bankapp -maxdepth 4 -type f
       - name: Update tag in Kubernetes Deployment manifest
         run: |
-          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/my-app-image:${{ github.run_id }}|" bankapp/bankapp-ds.yml
+          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/my-app-image:${{ github.run_id }}|" /bankapp-ds.yml
 
       - name: Commit and push changes
         run: |
