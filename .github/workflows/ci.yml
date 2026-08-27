@@ -134,6 +134,6 @@ jobs:
           cd bankapp
           git config --global user.name "Hemant"
           git config --global user.email "hkg2818@gmail.com"
-          git add bankapp-ds.yml
+          git add bankapp/bankapp-ds.yml
           git commit -m "Update Docker image tag to ${{ github.run_id }}"
           git push origin main
